@@ -242,11 +242,26 @@ let rec deep rule ps p =
            NotOK "shapes don't match"
       | _ -> NotOK "")
 
+let rec partdeep rule ps p =
+  match rule ps p with
+  | OK -> OK
+  | _ ->
+     (match (ps, p) with
+      | ([And (p1, p2)], And (p1', p2'))
+        | ([Or (p1, p2)], Or (p1', p2')) ->
+         if peq p1 p1' then
+           partdeep rule [p2] p2'
+         else if peq p2 p2' then
+           partdeep rule [p1] p1'
+         else
+           NotOK "shapes don't match"
+      | _ -> NotOK "")
+    
 let rules =
-  [(["Simplify"; "Simplification"; "S"], 1, simplify, "p /\\ q => p, q");
-   (["ModusPonens"; "MP"], 2, modusponens, "(p -> q), p => q");
-   (["Conjunction"; "Addition"; "Conj"], 2, conj, "p, q => p /\\ q");
-   (["Disjunction"; "Disj"], 1, disj, "p => p \\/ q, q \\/ p");
+  [(["Simplify"; "Simplification"; "S"], 1, partdeep simplify, "p /\\ q => p, q");
+   (["ModusPonens"; "MP"], 2, partdeep modusponens, "(p -> q), p => q");
+   (["Conjunction"; "Addition"; "Conj"], 2, partdeep conj, "p, q => p /\\ q");
+   (["Disjunction"; "Disj"], 1, partdeep disj, "p => p \\/ q, q \\/ p");
    (["DefinitionC"; "DC"], 1, deep defcond, "p -> q <=> ~p \\/ q");
    (["DefinitionBC"; "DBC"], 1, deep defbicond, "p <-> q <=> (p -> q) /\\ (q -> p)");
    (["ExcludedMiddle"; "LEM"], 1, deep lem, "p \\/ ~p <=> T");

@@ -22,6 +22,14 @@
 
 %start proof
 %type <Types.proof> proof
+%type <Types.line> firstline
+%type <Types.line list> lines
+%type <Types.line> line
+%type <Types.exp> reason
+%type <Types.prop> prop
+%type <Types.prop> app
+%type <Types.var list> vargs
+%type <Types.exvar list> exargs
 
 %%
 
@@ -32,7 +40,7 @@ proof:
 
 firstline:
   | line { $1 }
-  | prop { ($startpos.pos_lnum, $1, Assumption) }
+  | prop { ($startpos.Lexing.pos_lnum, $1, Assumption) }
   | NEWLINE firstline { $2 }
 
 lines:
@@ -42,7 +50,7 @@ lines:
   | line EOF { [$1] }
 
 line:
-  | prop TAB reason { ($startpos.pos_lnum, $1, $3) }
+  | prop TAB reason { ($startpos.Lexing.pos_lnum, $1, $3) }
   | prop { raise (ParseError ("no justification", $loc)) }
 
 reason:
