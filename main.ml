@@ -9,9 +9,9 @@ let parse (f: string) =
     Parser.proof Lexer.token lexbuf
   with
   | Lexer.Error msg ->
-     Printf.eprintf "%s\n" msg; exit 1
+     Printf.printf "%s\n" msg; exit 1
   | Types.ParseError (msg, (s, e)) ->
-     Printf.eprintf "Syntax Error at %d:%d-%d:%d: %s\n"
+     Printf.printf "Syntax Error at %d:%d-%d:%d: %s\n"
        s.pos_lnum
        (s.pos_cnum - s.pos_bol)
        e.pos_lnum
@@ -21,7 +21,6 @@ let parse (f: string) =
 
 let proof = parse (Sys.argv.(1))
 
-let _ = Printf.printf "%s\n" (Rules.rules_HTML ())
 let _ =
   match check_full_proof proof with
   | Good -> Printf.printf "Proof is correct.\n"
