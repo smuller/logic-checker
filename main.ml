@@ -35,5 +35,6 @@ let _ =
            s
        )
        errs;
-     Printf.printf "\n"
+     Printf.printf "\n";
+     exit 1
   | Incomplete -> Printf.printf "No errors but proof is incomplete.\n"
