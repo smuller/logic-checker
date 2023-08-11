@@ -8,7 +8,7 @@ all: types.ml lexer.mll parser.mly rules.ml check.ml main.ml
 	ocamlc -o $(BIN) types.cmo parser.mli lexer.ml parser.ml rules.ml check.ml main.ml
 
 js: all
-	mkdir $(JSDIR)
+	mkdir -p $(JSDIR)
 	ocamlc types.ml
 	ocamllex lexer.mll
 	menhir parser.mly

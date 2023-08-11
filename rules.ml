@@ -165,7 +165,6 @@ let dist =
       )
     )
 
-    (*
 let comm =
   biimp
     (fun p1 p2 ->
@@ -175,8 +174,28 @@ let comm =
       | (Or (p1, q1), Or (q2, p2))
            when peq p1 p2 && peq q1 q1 -> OK
       | _ -> NotOK "doesn't apply")
-     *)
-  
+
+let assoc =
+  biimp
+    (fun p1 p2 ->
+      match p1, p2 with
+      | And (p1, And (q1, r1)), And (And (p2, q2), r2)
+        | Or (p1, Or (q1, r1)), Or (Or (p2, q2), r2) ->
+         if peq p1 p2 && peq q1 q2 && peq r1 r2 then OK
+         else NotOK "doesn't apply"
+      | _ -> NotOK "doesn't apply"
+    )
+
+let idemp =
+  biimp
+    (fun p1 p2 ->
+      match p1, p2 with
+      | And (p1, p2), p3 when peq p1 p2 && peq p1 p3 -> OK
+      | Or (p1, p2), p3 when peq p1 p2 && peq p1 p3 -> OK
+      | _ -> NotOK "doesn't apply"
+    )
+
+(*
 let comm_assoc =
   let rec in_and big_p small_p  =
     match big_p with
@@ -205,6 +224,7 @@ let comm_assoc =
       || ((forall_or (in_or p1) p2) && (forall_or (in_or p2) p1))
     then OK
     else NotOK "doesn't apply")
+ *)
 
 let dom =
   biimp
@@ -270,8 +290,10 @@ let rules =
    (["Identity"; "Id"; "ID"], 1, deep id, "p /\\ T => p<br />p \\/ F => p");
    (["DeMorgan"; "DM"], 1, deep demorgan, "~(p /\\ q) <=> ~p \\/ ~q<br />~(p \\/ q) <=> ~p /\\ ~q<br />~(Forall x. p(x)) <=> Exists x. ~p(x)<br />~(Exists x. p(x)) <=> Forall x. ~p(x)");
    (["Distributivity"; "Dist"], 1, deep dist, "(p /\\ q) \\/ R <=> (p \\/ R) /\\ (q \\/ R)<br />(p \\/ q) /\\ R <=> (p /\\ R) \\/ (q /\\ R)");
-   (*(["Commutativity"; "Comm"], 1, deep comm, "p /\\ q <=> q /\\ p<br />p \\/ q <=> q \\/ p"); *)
-   (["CommAssocIdem"; "CommAssoc"; "CA"; "CAI"], 1, deep comm_assoc, "Applies commutativity, associativity and<br />idempotence as many times as needed");
+   (["Commutativity"; "Comm"], 1, deep comm, "p /\\ q <=> q /\\ p<br />p \\/ q <=> q \\/ p");
+   (* (["CommAssocIdem"; "CommAssoc"; "CA"; "CAI"], 1, deep comm_assoc, "Applies commutativity, associativity and<br />idempotence as many times as needed"); *)
+   (["Associativity"; "Assoc"], 1, deep assoc, "p /\\ (q /\\ r) <=> (p /\\ q) /\\ r<br />p \\/ (q \\/ r) <=> (p \\/ q) \\/ r");
+   (["Idempotency"; "Idem"], 1, deep idemp, "p /\\ p <=> p, p \\/ p <=> p");
    (["Domination"; "Dom"], 1, deep dom, "p \\/ T <=> T<br />p /\\ F <=> F");
   ]
           
